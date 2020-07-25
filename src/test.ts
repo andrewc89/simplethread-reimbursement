@@ -4,10 +4,10 @@ import assert from "assert";
 const intervals = [
   Interval.fromDateTimes(
     DateTime.fromFormat("9/1/15", "M/d/yy"),
-    DateTime.fromFormat("9/1/15", "M/d/yy"),
+    DateTime.fromFormat("9/3/15", "M/d/yy"),
   ),
   Interval.fromDateTimes(
-    DateTime.fromFormat("9/1/15", "M/d/yy"),
+    DateTime.fromFormat("9/3/15", "M/d/yy"),
     DateTime.fromFormat("9/7/15", "M/d/yy"),
   ),
   Interval.fromDateTimes(
@@ -26,11 +26,9 @@ const days = intervals.reduce((
   index: number,
 ) => {
   console.log(JSON.stringify(days));
-  console.log(days.length);
   console.log(`INDEX: ${index}`);
   if (index === 0) {
-    console.log(interval.count("days"));
-    return days.concat(Array(Math.max(0, interval.count("days"))).fill(1));
+    return days.concat(Array(interval.count("days")).fill(1));
   }
 
   const prevInterval = intervals[index - 1];
