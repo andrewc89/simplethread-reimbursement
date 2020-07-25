@@ -1,9 +1,7 @@
 import glob from "glob-promise";
 import fs from "fs";
 
-import {
-  ProjectSet,
-} from "./projectSet";
+import { ProjectSet } from "./projectSet";
 
 (async function run() {
   const files = await glob("sets/*.json");
