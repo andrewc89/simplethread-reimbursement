@@ -6,10 +6,11 @@ const dateFormat = "M/d/yy";
 export class Project {
   public readonly interval: Interval;
   public readonly city: City;
-  constructor(private readonly pojo: ProjectPojo) {
+
+  constructor(pojo: ProjectPojo) {
     this.interval = Interval.fromDateTimes(
       DateTime.fromFormat(pojo.startDate, dateFormat),
-      DateTime.fromFormat(pojo.startDate, dateFormat),
+      DateTime.fromFormat(pojo.endDate, dateFormat),
     );
     this.city = pojo.city;
   }
@@ -18,30 +19,28 @@ export class Project {
     return this.interval.count("days");
   }
 
-  leadingGapDays(project: Project): number {
+  // the number of days following the end of the specified project and before
+  // the start of this project
+  leadingGapDays(prevProject: Project): number {
     const gapInterval = Interval.fromDateTimes(
-      project.interval.end,
+      prevProject.interval.end,
       this.interval.start,
     );
-    // TODO: Remove if and rely on Math.max?
-    if (gapInterval.isValid) {
-      return 0;
-    }
 
     return Math.max(0, gapInterval.length("days") - 1);
   }
 
-  overlappingDays(project: Project): number {
-    if (!this.interval.overlaps(project.interval)) {
+  overlappingDays(prevProject: Project): number {
+    if (!this.interval.overlaps(prevProject.interval)) {
       return 0;
     }
 
-    const intersection = this.interval.intersection(project.interval);
+    const intersection = this.interval.intersection(prevProject.interval);
     return intersection.count("days");
   }
 
-  // if this project is abutting the end of the specified project
-  isAbuttingEndOf(project: Project): boolean {
-    return project.interval.abutsStart(this.interval);
+  // is the start of this project abutting the end of the specified project?
+  isAbuttingEndOf(prevProject: Project): boolean {
+    return prevProject.interval.abutsStart(this.interval);
   }
 }

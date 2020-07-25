@@ -22,14 +22,17 @@ export class ProjectSet {
       }
 
       const prevProject = this.set[index - 1];
-      period = period.push(project.leadingGapDays(prevProject), ChargeRate.None);
+      period = period.push(
+        project.leadingGapDays(prevProject),
+        ChargeRate.None,
+      );
       period = period.pop(project.overlappingDays(prevProject));
 
       if (project.isAbuttingEndOf(prevProject)) {
         period = period.pop(1);
       }
 
-      return period.push(project.days(), cost)
+      return period.push(project.days(), cost);
     }, new ReimbursementPeriod([]));
   }
 

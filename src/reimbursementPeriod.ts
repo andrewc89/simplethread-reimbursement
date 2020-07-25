@@ -1,4 +1,3 @@
-
 export enum ChargeRate {
   None = 0,
   Low = 1,
@@ -10,6 +9,8 @@ enum ChargeType {
   TravelDay = 1,
 }
 
+// all js arrays are unique so unable to use a tuple as a map key. opted to
+// stringify the tuple and wrap in the Charge class
 const reimbursementMap: Map<string, number> = new Map([
   [[ChargeRate.High, ChargeType.FullDay].toString(), 85],
   [[ChargeRate.High, ChargeType.TravelDay].toString(), 55],
@@ -29,37 +30,48 @@ class Charge {
 }
 
 export class ReimbursementPeriod {
-  constructor(private readonly costs: ChargeRate[]) {}
+  constructor(private readonly rates: ChargeRate[]) {}
 
   push(num: number, type: ChargeRate): ReimbursementPeriod {
-    return new ReimbursementPeriod(this.costs.concat(Array(num).fill(type)));
+    return new ReimbursementPeriod(this.rates.concat(Array(num).fill(type)));
   }
 
   pop(num: number): ReimbursementPeriod {
-    return new ReimbursementPeriod(this.costs.slice(0, this.costs.length - num));
+    return new ReimbursementPeriod(
+      this.rates.slice(0, this.rates.length - num),
+    );
   }
 
   amount(): number {
-    return this.costs.reduce((
+    return this.rates.reduce((
       reimbursement: number,
       rate: ChargeRate,
       index: number,
     ) => {
-      if ([0, this.costs.length - 1].includes(index)) {
-        return reimbursement + new Charge(rate, ChargeType.TravelDay).reimbursement();
+      if ([0, this.rates.length - 1].includes(index)) {
+        return reimbursement + new Charge(
+          rate,
+          ChargeType.TravelDay,
+        ).reimbursement();
       }
 
       if (rate === ChargeRate.None) {
         return reimbursement;
       }
 
-      const prevDay = this.costs[index - 1];
-      const nextDay = this.costs[index + 1];
+      const prevDay = this.rates[index - 1];
+      const nextDay = this.rates[index + 1];
       if ([prevDay, nextDay].includes(ChargeRate.None)) {
-        return reimbursement + new Charge(rate, ChargeType.TravelDay).reimbursement();
+        return reimbursement + new Charge(
+          rate,
+          ChargeType.TravelDay,
+        ).reimbursement();
       }
 
-      return reimbursement + new Charge(rate, ChargeType.FullDay).reimbursement();
+      return reimbursement + new Charge(
+        rate,
+        ChargeType.FullDay,
+      ).reimbursement();
     }, 0);
   }
 }
