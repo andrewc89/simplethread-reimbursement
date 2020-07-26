@@ -8,8 +8,9 @@ import { ProjectSet } from "./projectSet";
   await Promise.all(files.map(async (file) => {
     const rawContents = await fs.promises.readFile(file, 'utf8');
     const projectSet = ProjectSet.fromPojo(JSON.parse(rawContents));
+    const amount = projectSet.reimbursement().amount();
     console.log(
-      `Project ${file} reimbursement: ${projectSet.reimbursement().amount()}`,
+      `Project ${file} reimbursement: $${amount}`,
     );
   }));
 })();

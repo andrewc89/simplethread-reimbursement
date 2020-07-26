@@ -1,10 +1,10 @@
-export enum ChargeRate {
+export enum ReimbursementRate {
   None = 0,
   Low = 1,
   High = 2,
 }
 
-enum ChargeType {
+enum ReimbursementType {
   FullDay = 0,
   TravelDay = 1,
 }
@@ -12,16 +12,16 @@ enum ChargeType {
 // all js arrays are unique so unable to use a tuple as a map key. opted to
 // stringify the tuple and wrap in the Charge class
 const reimbursementMap: Map<string, number> = new Map([
-  [[ChargeRate.High, ChargeType.FullDay].toString(), 85],
-  [[ChargeRate.High, ChargeType.TravelDay].toString(), 55],
-  [[ChargeRate.Low, ChargeType.FullDay].toString(), 75],
-  [[ChargeRate.Low, ChargeType.TravelDay].toString(), 45],
+  [[ReimbursementRate.High, ReimbursementType.FullDay].toString(), 85],
+  [[ReimbursementRate.High, ReimbursementType.TravelDay].toString(), 55],
+  [[ReimbursementRate.Low, ReimbursementType.FullDay].toString(), 75],
+  [[ReimbursementRate.Low, ReimbursementType.TravelDay].toString(), 45],
 ]);
 
 class Charge {
   constructor(
-    private readonly rate: ChargeRate,
-    private readonly type: ChargeType,
+    private readonly rate: ReimbursementRate,
+    private readonly type: ReimbursementType,
   ) {}
 
   reimbursement(): number {
@@ -30,47 +30,42 @@ class Charge {
 }
 
 export class ReimbursementPeriod {
-  constructor(private readonly rates: ChargeRate[]) {}
+  constructor(private readonly rates: ReimbursementRate[]) {}
 
-  push(num: number, type: ChargeRate): ReimbursementPeriod {
+  push(num: number, type: ReimbursementRate): ReimbursementPeriod {
     return new ReimbursementPeriod(this.rates.concat(Array(num).fill(type)));
-  }
-
-  pop(num: number): ReimbursementPeriod {
-    return new ReimbursementPeriod(
-      this.rates.slice(0, this.rates.length - num),
-    );
   }
 
   amount(): number {
     return this.rates.reduce((
       reimbursement: number,
-      rate: ChargeRate,
+      rate: ReimbursementRate,
       index: number,
     ) => {
+      // if the first or last day of the period
       if ([0, this.rates.length - 1].includes(index)) {
         return reimbursement + new Charge(
           rate,
-          ChargeType.TravelDay,
+          ReimbursementType.TravelDay,
         ).reimbursement();
       }
 
-      if (rate === ChargeRate.None) {
+      if (rate === ReimbursementRate.None) {
         return reimbursement;
       }
 
       const prevDay = this.rates[index - 1];
       const nextDay = this.rates[index + 1];
-      if ([prevDay, nextDay].includes(ChargeRate.None)) {
+      if ([prevDay, nextDay].includes(ReimbursementRate.None)) {
         return reimbursement + new Charge(
           rate,
-          ChargeType.TravelDay,
+          ReimbursementType.TravelDay,
         ).reimbursement();
       }
 
       return reimbursement + new Charge(
         rate,
-        ChargeType.FullDay,
+        ReimbursementType.FullDay,
       ).reimbursement();
     }, 0);
   }
