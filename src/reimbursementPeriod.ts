@@ -18,7 +18,7 @@ const reimbursementMap: Map<string, number> = new Map([
   [[ReimbursementRate.Low, ReimbursementType.TravelDay].toString(), 45],
 ]);
 
-class Charge {
+class Reimbursement {
   constructor(
     private readonly rate: ReimbursementRate,
     private readonly type: ReimbursementType,
@@ -44,7 +44,7 @@ export class ReimbursementPeriod {
     ) => {
       // if the first or last day of the period
       if ([0, this.rates.length - 1].includes(index)) {
-        return reimbursement + new Charge(
+        return reimbursement + new Reimbursement(
           rate,
           ReimbursementType.TravelDay,
         ).reimbursement();
@@ -57,13 +57,13 @@ export class ReimbursementPeriod {
       const prevDay = this.rates[index - 1];
       const nextDay = this.rates[index + 1];
       if ([prevDay, nextDay].includes(ReimbursementRate.None)) {
-        return reimbursement + new Charge(
+        return reimbursement + new Reimbursement(
           rate,
           ReimbursementType.TravelDay,
         ).reimbursement();
       }
 
-      return reimbursement + new Charge(
+      return reimbursement + new Reimbursement(
         rate,
         ReimbursementType.FullDay,
       ).reimbursement();
