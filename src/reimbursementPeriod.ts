@@ -24,7 +24,7 @@ class Reimbursement {
     private readonly type: ReimbursementType,
   ) {}
 
-  reimbursement(): number {
+  amount(): number {
     return reimbursementMap.get([this.rate, this.type].toString());
   }
 }
@@ -47,7 +47,7 @@ export class ReimbursementPeriod {
         return reimbursement + new Reimbursement(
           rate,
           ReimbursementType.TravelDay,
-        ).reimbursement();
+        ).amount();
       }
 
       if (rate === ReimbursementRate.None) {
@@ -60,13 +60,13 @@ export class ReimbursementPeriod {
         return reimbursement + new Reimbursement(
           rate,
           ReimbursementType.TravelDay,
-        ).reimbursement();
+        ).amount();
       }
 
       return reimbursement + new Reimbursement(
         rate,
         ReimbursementType.FullDay,
-      ).reimbursement();
+      ).amount();
     }, 0);
   }
 }
